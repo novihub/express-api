@@ -1,10 +1,9 @@
-import Post from './Post.js'
+import PostService from './PostService.js'
 
 class PostController {
 	async create(req, res) {
 		try {
-			const { author, title, content, picture } = req.body
-			const post = await Post.create({ author, title, content, picture })
+			const post = await PostService.create(req.body)
 			res.status(200).json(post)
 		} catch (e) {
 			res.status(500).json(e)
@@ -14,28 +13,23 @@ class PostController {
 
 	async getAll(req, res) {
 		try {
-			const posts = await Post.find()
-			res.json(posts)
+			const posts = await PostService.getAll()
+			return res.json(posts)
 		} catch (e) {
 			res.json(e)
 		}
 	}
 	async getOne(req, res) {
 		try {
-			const { id } = req.params
-			if (!id) {
-				res.status(400).json({ message: 'id is required' })
-			}
-			const posts = await Post.findById(id)
-			res.json(posts)
+			const posts = await PostService.getOne(req.params.id)
+			return res.json(posts)
 		} catch (e) {
 			res.status(500).json(e)
 		}
 	}
 	async update(req, res) {
 		try {
-			const post = req.body
-			const updatedPost = await Post.findByIdAndUpdate(req.params.id, post, {
+			const updatedPost = await PostService.update(req.params.id, req.body, {
 				new: true
 			})
 			res.json(updatedPost)
@@ -45,14 +39,10 @@ class PostController {
 	}
 	async delete(req, res) {
 		try {
-			const { id } = req.params
-			if (!id) {
-				res.status(400).json({ message: 'id is required' })
-			}
-			const post = await Post.findByIdAndDelete(id)
-			res.json(post)
+			const deletedPost = await PostService.delete(req.params.id)
+			return res.json(deletedPost)
 		} catch (e) {
-			res.status(500).json(e)
+			return res.status(500).json(e)
 		}
 	}
 }
